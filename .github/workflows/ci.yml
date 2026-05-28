@@ -1,0 +1,22 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+      - name: Setup
+        run: |
+          $HOME/.local/bin/uv venv --python 3.12
+          $HOME/.local/bin/uv pip install --python .venv/bin/python -e ".[dev]"
+      - name: Lint
+        run: .venv/bin/ruff check src tests
+      - name: Test
+        run: .venv/bin/pytest -m "not slow" -v

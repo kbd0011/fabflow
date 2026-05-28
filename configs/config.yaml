@@ -1,0 +1,49 @@
+# FabFlow-Cortex configuration
+
+fab:
+  name: "FabFlow synthetic 200mm fab"
+  seed: 42
+  # Synthetic fab generator parameters
+  n_tool_groups: 8           # work centers (e.g., Litho, Etch, CMP, Implant, Depo, Diffusion, Metrology, Clean)
+  n_products: 3              # product families with distinct routes
+  route_length_range: [10, 18]   # steps per product route
+  tools_per_group_range: [1, 4]  # parallel identical tools per work center
+  proc_time_range: [1.0, 4.0]    # hours per step (base, before variability)
+  proc_time_cv: 0.25             # coefficient of variation on processing time
+  setup_time_frac: 0.10          # setup as a fraction of processing time on product change
+  mtbf_hours: 200.0              # mean time between failures per tool
+  mttr_hours: 8.0                # mean time to repair
+  availability_target: 0.92      # informational; emerges from MTBF/MTTR
+
+sim:
+  warmup_hours: 168.0        # 1 week warmup (excluded from KPIs)
+  horizon_hours: 1512.0      # ~9 weeks total simulated time
+  release_policy: conwip     # conwip | uniform
+  conwip_level: 40           # max lots in system (CONWIP cap; ~X-factor 2.8 baseline)
+  uniform_interarrival_hours: 6.0   # used only when release_policy = uniform
+  wafers_per_lot: 25
+  reps: 5                    # independent replications per scenario (different seeds)
+
+dispatching:
+  rule: fifo                 # fifo | spt | edd | cr | ls   (baseline default)
+
+scenarios:
+  # The pre/post improvement study runs these and compares against 'baseline'.
+  baseline:
+    dispatching: fifo
+    add_tool_at_bottleneck: 0
+  improved_dispatch:
+    dispatching: cr          # critical ratio
+    add_tool_at_bottleneck: 0
+  add_bottleneck_tool:
+    dispatching: fifo
+    add_tool_at_bottleneck: 1
+  combined:
+    dispatching: cr
+    add_tool_at_bottleneck: 1
+
+output:
+  run_dir: artifacts/runs
+  warehouse: artifacts/warehouse.duckdb
+  report_dir: artifacts/reports
+  bi_export_dir: artifacts/bi_export

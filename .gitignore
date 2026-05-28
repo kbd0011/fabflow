@@ -1,0 +1,24 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
+.env
+.venv/
+venv/
+.ipynb_checkpoints/
+.DS_Store
+.python-version
+uv.lock
+# Generated simulation outputs + warehouse + reports (reproducible via `make run`)
+artifacts/runs/
+artifacts/warehouse.duckdb
+artifacts/reports/*.html
+artifacts/bi_export/
+data/*.duckdb
+# Keep the committed sample improvement report
+!docs/sample_improvement_report.html
