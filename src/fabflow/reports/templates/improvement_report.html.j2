@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>FabFlow-Cortex — Improvement Study</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 40px auto; max-width: 1000px; color: #1a202c; }
+  h1 { border-bottom: 2px solid #444; padding-bottom: 6px; }
+  h2 { color: #2a4365; margin-top: 28px; }
+  .meta { color: #555; font-size: 0.9em; }
+  table { border-collapse: collapse; width: 100%; margin: 12px 0; font-size: 0.88em; }
+  th, td { border: 1px solid #e2e8f0; padding: 6px 9px; text-align: right; }
+  th:first-child, td:first-child { text-align: left; }
+  thead { background: #edf2f7; }
+  tr.baseline { background: #f7fafc; font-weight: 600; }
+  .pos { color: #2f855a; font-weight: 600; }
+  .neg { color: #c53030; font-weight: 600; }
+  .callout { background: #ebf8ff; border-left: 4px solid #3182ce; padding: 12px 16px; margin: 14px 0; }
+  .bottleneck { background: #fffaf0; border-left: 4px solid #dd6b20; padding: 10px 14px; margin: 12px 0; }
+  img { max-width: 100%; border: 1px solid #e2e8f0; border-radius: 6px; margin: 8px 0; }
+  footer { margin-top: 36px; color: #777; font-size: 0.8em; border-top: 1px solid #e2e8f0; padding-top: 10px; }
+  code { background: #edf2f7; padding: 1px 5px; border-radius: 3px; }
+</style>
+</head>
+<body>
+<h1>FabFlow-Cortex — Pre/Post Improvement Study</h1>
+<p class="meta">{{ fab_name }} &middot; generated {{ generated }}</p>
+
+{% if best_scenario %}
+<div class="callout">
+  <b>Headline:</b> scenario <code>{{ best_scenario }}</code> cut mean cycle time by
+  <b>{{ best_delta.mean_cycle_time_h }}%</b> and X-factor by
+  <b>{{ best_delta.mean_x_factor }}%</b> vs the <code>{{ baseline }}</code> baseline,
+  while changing throughput by {{ best_delta.wafers_out_per_week }}% and on-time delivery by
+  {{ best_delta.on_time_delivery }}% (positive = better; averaged across reps).
+</div>
+{% endif %}
+
+{% if bottleneck %}
+<div class="bottleneck">
+  <b>Bottleneck (baseline):</b> <code>{{ bottleneck.name }}</code> at
+  {{ (bottleneck.utilization * 100) | round(1) }}% utilization across {{ bottleneck.n_tools }} tool(s).
+  Capacity-addition scenarios target this work center.
+</div>
+{% endif %}
+
+<h2>Headline KPIs (mean &plusmn; 95% CI across reps)</h2>
+<p class="meta">95% confidence-interval half-widths from a Student-t distribution over the
+replications. On-time delivery is a pooled ratio (total tardy / total lots), matching
+the BI / Tableau definition.</p>
+<table>
+  <thead><tr><th>scenario</th>{% for c in headline_cols %}<th>{{ c }}</th>{% endfor %}</tr></thead>
+  <tbody>
+  {% for scen, vals in headline_rows %}
+    <tr class="{{ 'baseline' if scen == baseline else '' }}">
+      <td>{{ scen }}</td>{% for v in vals %}<td>{{ v }}</td>{% endfor %}
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+<h2>KPI summary (mean across reps)</h2>
+<table>
+  <thead><tr><th>scenario</th>{% for c in kpi_cols %}<th>{{ c }}</th>{% endfor %}</tr></thead>
+  <tbody>
+  {% for scen, vals in kpi_rows %}
+    <tr class="{{ 'baseline' if scen == baseline else '' }}">
+      <td>{{ scen }}</td>{% for v in vals %}<td>{{ v }}</td>{% endfor %}
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+<h2>Improvement vs baseline (% , positive = better)</h2>
+<table>
+  <thead><tr><th>scenario</th>{% for c in delta_cols %}<th>{{ c }}</th>{% endfor %}</tr></thead>
+  <tbody>
+  {% for scen, vals in delta_rows %}
+    <tr>
+      <td>{{ scen }}</td>
+      {% for v in vals %}<td class="{{ 'pos' if v > 0 else ('neg' if v < 0 else '') }}">{{ v }}</td>{% endfor %}
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+<h2>Cycle-time distribution</h2>
+<img src="{{ ct_dist_png }}" alt="cycle time distribution" />
+
+<h2>KPIs at a glance</h2>
+<img src="{{ kpi_bars_png }}" alt="kpi bars" />
+
+<h2>Tool-group utilization</h2>
+<img src="{{ util_png }}" alt="utilization" />
+
+<h2>How to read this</h2>
+<p style="font-size:0.9em">
+  <b>X-factor</b> (cycle time ÷ raw process time) is the canonical fab flow metric: 1.0 is a
+  perfectly flowing fab, 3+ signals heavy queueing. Cutting X-factor without adding capacity
+  is "free" cycle-time reduction. <b>On-time delivery</b> is the fraction of lots finishing by
+  their due date. The improvement levers here are the <b>dispatching rule</b> (how the next lot
+  is chosen at each tool) and <b>capacity at the bottleneck</b>.
+</p>
+
+<footer>
+  FabFlow-Cortex v0.1.0 &middot; SimPy discrete-event fab digital twin + DuckDB analytics.
+  Synthetic fab model for methodology demonstration; absolute numbers are not a real fab.
+</footer>
+</body>
+</html>
