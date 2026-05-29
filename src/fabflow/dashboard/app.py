@@ -18,6 +18,12 @@ from fabflow.config import load_config
 st.set_page_config(page_title="FabFlow-Cortex", layout="wide", page_icon="🏭")
 st.title("FabFlow-Cortex")
 st.caption("SimPy wafer-fab digital twin · DuckDB analytics · pre/post improvement study")
+st.info(
+    "Synthetic fab model — absolute numbers are illustrative; the **deltas and the "
+    "method** (find the constraint → intervene → measure across replications) are the "
+    "deliverable. The warehouse is built on first load by running the study.",
+    icon="🏭",
+)
 
 
 @st.cache_resource
@@ -28,9 +34,18 @@ def get_cfg():
 cfg = get_cfg()
 db = cfg.output.warehouse
 
-if not Path(db).exists():
-    st.warning("No warehouse found. Run `fabflow study` (or `make run`) first to generate it.")
-    st.stop()
+
+@st.cache_resource(show_spinner=False)
+def ensure_warehouse() -> str:
+    """Build the DuckDB warehouse on first load if it isn't present (Spaces ship no warehouse)."""
+    if not Path(db).exists():
+        with st.spinner("Building the synthetic-fab warehouse (running all scenarios x reps)…"):
+            from fabflow.analysis.study import run_study
+            run_study(cfg)
+    return str(db)
+
+
+ensure_warehouse()
 
 H, Wm = cfg.sim.horizon_hours, cfg.sim.warmup_hours
 

@@ -1,4 +1,4 @@
-.PHONY: install env test lint format clean simulate analyze report dashboard bi-export run study demo
+.PHONY: install env test lint format clean simulate analyze report dashboard bi-export run study demo space-build deploy-hf
 
 PYTHON := python
 UV := uv
@@ -64,3 +64,11 @@ run: study analyze report bi-export
 	@echo "  BI data:   artifacts/bi_export/  (point Tableau Public here)"
 
 demo: run
+
+# === Hugging Face Space ===
+
+space-build:
+	$(PYTHON) scripts/deploy_space.py --build
+
+deploy-hf:
+	$(PYTHON) scripts/deploy_space.py --deploy --repo-id kbd0011/fabflow
