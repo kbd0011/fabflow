@@ -68,7 +68,7 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--build", action="store_true")
     ap.add_argument("--deploy", action="store_true")
-    ap.add_argument("--repo-id", default="kbd0011/fabflow")
+    ap.add_argument("--repo-id", default="kbdev0011/fabflow")
     args = ap.parse_args()
     if args.deploy:
         deploy(args.repo_id)
