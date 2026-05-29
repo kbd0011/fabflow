@@ -95,37 +95,6 @@ Little's Law (WIP = throughput × cycle time) is cross-checked in `analysis/kpis
 
 ---
 
-## Why these design choices
-
-- **Custom SimPy model, not an off-the-shelf simulator** — full control over dispatching
-  and event capture, fully reproducible, and it demonstrates the modeling itself.
-- **Manual queue + dispatching** (not `simpy.Resource`) so arbitrary dispatching rules
-  apply and every queue/wait event is logged.
-- **Failures sampled per job from MTBF** — deterministic given a seed, and they bite
-  hardest at the busy (bottleneck) work centers, as in a real fab.
-- **CONWIP release** tuned so the baseline X-factor lands near ~2.8 (a realistic fab
-  regime with room to improve), rather than an artificially easy or saturated line.
-- **DuckDB star schema as the single source of truth** feeding the report, the
-  dashboard, and the Parquet/BI export — so the KPI math is defined once.
-- **Multiple seeded replications** so the deltas are averages, not single-run luck.
-
----
-
-## How this maps to fab roles
-
-| Role | What this project demonstrates |
-|---|---|
-| **Operations Improvement / Industrial Engineer** | Bottleneck analysis, dispatching policy, capacity planning, quantified pre/post improvement with replications. |
-| **Yield Enhancement / PYE** | Cycle-time and X-factor reduction, WIP control, throughput vs. variability tradeoffs. |
-| **FE Materials BI Analyst** | Star-schema data modeling in DuckDB, Parquet export, a Tableau dashboard, consistent KPI definitions (see `docs/tableau_guide.md`). |
-| **Data Science Engineer** | Discrete-event simulation, statistical replication, a reproducible analytics pipeline + CLI + tests + CI. |
-
-The model is a **front-end logistics abstraction**: re-entrant routes, parallel tools,
-a dominant constraint. The same scaffolding generalizes conceptually to memory flows
-like HBM stacking / TSV (also re-entrant and bottleneck-driven) — though it has **not**
-been calibrated to any such process and makes no claim to real numbers.
-
----
 
 ## Honest limitations
 
