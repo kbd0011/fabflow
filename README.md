@@ -3,6 +3,9 @@
 [![ci](https://github.com/kbd0011/fabflow/actions/workflows/ci.yml/badge.svg)](https://github.com/kbd0011/fabflow/actions/workflows/ci.yml)
 ![python](https://img.shields.io/badge/python-3.11%2B-blue)
 ![license](https://img.shields.io/badge/license-MIT-green)
+[![Live demo](https://img.shields.io/badge/%F0%9F%A4%97%20demo-Hugging%20Face%20Space-ffce1c.svg)](https://huggingface.co/spaces/kbdev0011/fabflow)
+
+▶ **Live demo:** https://huggingface.co/spaces/kbdev0011/fabflow
 
 **A SimPy discrete-event digital twin of a wafer fab, a DuckDB analytics layer, and a
 pre/post improvement study that quantifies what a smarter dispatching rule and a
