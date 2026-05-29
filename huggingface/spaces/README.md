@@ -3,12 +3,10 @@ title: FabFlow-Cortex
 emoji: 🏭
 colorFrom: green
 colorTo: gray
-sdk: streamlit
-sdk_version: "1.36.0"
-app_file: app.py
+sdk: docker
+app_port: 7860
 pinned: false
 license: mit
-python_version: "3.12"
 ---
 
 # FabFlow-Cortex

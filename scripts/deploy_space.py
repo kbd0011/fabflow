@@ -30,7 +30,7 @@ def build() -> Path:
         shutil.rmtree(BUILD_DIR)
     BUILD_DIR.mkdir(parents=True)
 
-    for name in ("app.py", "requirements.txt", "README.md"):
+    for name in ("app.py", "requirements.txt", "README.md", "Dockerfile"):
         shutil.copy2(SPACE_SRC / name, BUILD_DIR / name)
 
     for rel in INCLUDE:
@@ -52,7 +52,7 @@ def deploy(repo_id: str) -> str:
     from huggingface_hub import HfApi, create_repo
 
     build()
-    create_repo(repo_id, repo_type="space", space_sdk="streamlit", exist_ok=True)
+    create_repo(repo_id, repo_type="space", space_sdk="docker", exist_ok=True)
     HfApi().upload_folder(
         folder_path=str(BUILD_DIR),
         repo_id=repo_id,
